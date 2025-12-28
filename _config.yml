@@ -1,0 +1,33 @@
+# Site Configuration
+title: "Engineering Portfolio"
+description: "Visual-first engineering portfolio"
+url: "https://vebjornhegrand.github.io"
+baseurl: ""
+
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /projects/:slug/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      layout: "project"
+
+# Build settings
+markdown: kramdown
+exclude:
+  - DESIGN_PHILOSOPHY.md
+  - PROJECT_GOALS.md
+  - README.md
+  - ARCHITECTURE.md
+  - SETUP.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - tools/
+

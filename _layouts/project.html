@@ -1,0 +1,158 @@
+---
+layout: default
+---
+
+<article class="project-page">
+  
+  <!-- Hero Section (2-column, viewport-fit) -->
+  <div class="container">
+    <section class="project-hero">
+      
+      <!-- Left: Text Content -->
+      <div class="hero-content">
+        <h1 class="project-title">{{ page.title }}</h1>
+        <p class="project-description">{{ page.description }}</p>
+        
+        <!-- Extract Overview (after HTML processing) -->
+        {% assign overview_parts = content | split: '<h2 id="overview">Overview</h2>' %}
+        {% if overview_parts.size > 1 %}
+          {% assign overview_html = overview_parts[1] | split: '<h2' | first %}
+          {% if overview_html contains '<p>' %}
+            {% assign overview_paragraphs = overview_html | split: '</p>' %}
+            {% assign first_p = overview_paragraphs[0] | split: '<p>' %}
+            {% if first_p.size > 1 %}
+              <div class="project-overview">{{ first_p[1] | strip }}</div>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+        
+        <!-- Extract Key Takeaways (after HTML processing) -->
+        {% assign takeaways_parts = content | split: '<h2 id="key-takeaways">Key Takeaways</h2>' %}
+        {% if takeaways_parts.size > 1 %}
+          {% assign takeaways_html = takeaways_parts[1] | split: '<h2' | first %}
+          {% if takeaways_html contains '<ul class="project-takeaways">' %}
+            {% assign ul_content = takeaways_html | split: '<ul class="project-takeaways">' %}
+            {% if ul_content.size > 1 %}
+              {% assign ul_inner = ul_content[1] | split: '</ul>' | first %}
+              <ul class="project-takeaways">{{ ul_inner }}</ul>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+        
+        <!-- Tools -->
+        {% if page.tools %}
+        <div class="hero-tools">
+          <div class="hero-tools-label">Tools</div>
+          {% for tool in page.tools %}
+            <span class="hero-tool-tag">{{ tool }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Right: Hero Image Only -->
+      <div class="hero-visual-area">
+        <div class="hero-image-wrapper">
+          <img src="{{ page.hero_image | relative_url }}" alt="{{ page.title }}">
+        </div>
+      </div>
+      
+    </section>
+  </div>
+
+  <!-- Album Section (additional visuals below fold) -->
+  {% assign visuals_parts = content | split: '<h2 id="key-visuals">Key Visuals</h2>' %}
+  {% if visuals_parts.size > 1 %}
+    {% assign visuals_html = visuals_parts[1] | split: '<h2' | first %}
+    {% assign figures = visuals_html | split: '<figure class="project-visual">' %}
+    {% if figures.size > 1 %}
+      <section class="project-album">
+        <div class="container">
+          <h2>Visual Details</h2>
+          <div class="album-carousel" data-album-carousel>
+            <div class="album-image-wrapper">
+              {% for figure in figures offset:1 %}
+                <div class="album-slide{% if forloop.first %} active{% endif %}">
+                  {% assign img_match = figure | split: 'src="' %}
+                  {% if img_match.size > 1 %}
+                    {% assign img_src = img_match[1] | split: '"' | first %}
+                    <img src="{{ img_src | relative_url }}" alt="">
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+            
+            <div class="album-controls">
+              <button class="album-btn" data-album-prev>←</button>
+              <span class="album-indicator">
+                <span data-album-current>1</span> / <span data-album-total>{{ figures.size | minus: 1 }}</span>
+              </span>
+              <button class="album-btn" data-album-next>→</button>
+            </div>
+          </div>
+          
+          <div class="album-caption" data-album-caption>
+            {% for figure in figures offset:1 %}
+              {% assign caption_match = figure | split: '<figcaption>' %}
+              {% if caption_match.size > 1 %}
+                {% assign caption_html = caption_match[1] | split: '</figcaption>' | first %}
+                <div class="album-caption-item{% if forloop.first %} active{% endif %}">{{ caption_html }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  {% endif %}
+
+  <!-- Back Link -->
+  <div class="back-link">
+    <div class="container">
+      <a href="{{ '/' | relative_url }}">← Back to Projects</a>
+    </div>
+  </div>
+
+</article>
+
+<script>
+// Album carousel
+document.addEventListener('DOMContentLoaded', function() {
+  const albumCarousel = document.querySelector('[data-album-carousel]');
+  if (!albumCarousel) return;
+  
+  const slides = albumCarousel.querySelectorAll('.album-slide');
+  const captions = document.querySelectorAll('.album-caption-item');
+  const prevBtn = document.querySelector('[data-album-prev]');
+  const nextBtn = document.querySelector('[data-album-next]');
+  const currentSpan = document.querySelector('[data-album-current]');
+  
+  if (slides.length === 0 || !prevBtn || !nextBtn) return;
+  
+  let currentIndex = 0;
+  
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === index);
+      slide.style.opacity = i === index ? '1' : '0';
+    });
+    captions.forEach((caption, i) => {
+      caption.classList.toggle('active', i === index);
+      caption.style.opacity = i === index ? '1' : '0';
+    });
+    if (currentSpan) currentSpan.textContent = index + 1;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === slides.length - 1;
+  }
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) showSlide(--currentIndex);
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < slides.length - 1) showSlide(++currentIndex);
+  });
+  
+  showSlide(0);
+});
+</script>
+

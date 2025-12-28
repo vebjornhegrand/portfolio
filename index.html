@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<div class="container">
+  <section class="projects-grid">
+    {% assign sorted_projects = site.projects | sort: 'date' | reverse %}
+    {% for project in sorted_projects %}
+      <article class="project-card">
+        <a href="{{ project.url | relative_url }}" class="card-link">
+          <div class="card-image">
+            <img src="{{ project.hero_image | relative_url }}" alt="{{ project.title }}">
+          </div>
+          <div class="card-content">
+            <h2 class="card-title">{{ project.title }}</h2>
+            <p class="card-description">{{ project.description }}</p>
+          </div>
+        </a>
+      </article>
+    {% endfor %}
+  </section>
+</div>
+
