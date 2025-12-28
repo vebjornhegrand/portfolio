@@ -6,7 +6,7 @@ import sys
 
 # Add parent directory to path to access generator
 sys.path.insert(0, str(Path(__file__).parent))
-from generator import save_project, list_projects, load_project, delete_project, update_project
+from generator import save_project, list_projects, load_project, delete_project, update_project, git_push
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
@@ -48,7 +48,15 @@ def delete_project_route(slug):
     """Delete project."""
     try:
         result = delete_project(slug, PROJECT_ROOT)
-        return jsonify({'success': True, 'message': f'Project deleted: {slug}'})
+        
+        # Automatically commit and push to GitHub
+        git_result = git_push(PROJECT_ROOT, f'Delete project: {slug}')
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Project deleted: {slug}',
+            'git': git_result
+        })
     except ValueError as e:
         return jsonify({'success': False, 'error': str(e)}), 404
     except Exception as e:
@@ -94,11 +102,15 @@ def update_project_route(slug):
         # Update project
         result = update_project(data, images, slug, PROJECT_ROOT)
         
+        # Automatically commit and push to GitHub
+        git_result = git_push(PROJECT_ROOT, f'Update project: {data["title"]}')
+        
         return jsonify({
             'success': True,
             'message': f'Project updated: {result["slug"]}',
             'slug_changed': result['slug_changed'],
-            'new_slug': result['slug']
+            'new_slug': result['slug'],
+            'git': git_result
         })
         
     except ValueError as e:
@@ -150,6 +162,9 @@ def generate():
         # Generate project
         result = save_project(data, images, PROJECT_ROOT)
         
+        # Automatically commit and push to GitHub
+        git_result = git_push(PROJECT_ROOT, f'Add project: {data["title"]}')
+        
         return jsonify({
             'success': True,
             'message': f'Project created: {result["slug"]}',
@@ -157,7 +172,8 @@ def generate():
                 'markdown': result['markdown_file'],
                 'images': result['images']
             },
-            'url': result['url']
+            'url': result['url'],
+            'git': git_result
         })
         
     except ValueError as e:

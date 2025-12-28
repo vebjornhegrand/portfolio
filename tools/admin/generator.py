@@ -3,6 +3,7 @@
 import os
 import re
 import shutil
+import subprocess
 from pathlib import Path
 from datetime import datetime
 
@@ -24,9 +25,6 @@ def validate_project_data(data):
     
     if not data.get('visuals'):
         raise ValueError("At least one visual with caption is required")
-    
-    if data['category'] not in ['python', 'cad']:
-        raise ValueError("Category must be 'python' or 'cad'")
     
     # Validate date format
     try:
@@ -407,4 +405,54 @@ def update_project(data, images, old_slug, project_root, keep_existing_images=No
         'markdown_file': str(new_markdown_file),
         'images': saved_images
     }
+
+
+def git_push(project_root, message):
+    """Commit and push changes to GitHub.
+    
+    Args:
+        project_root: Path to project root directory
+        message: Commit message
+    
+    Returns:
+        dict with success status and message
+    """
+    try:
+        project_root = Path(project_root)
+        
+        # Add all changes
+        subprocess.run(['git', 'add', '-A'], cwd=project_root, check=True, capture_output=True)
+        
+        # Commit
+        result = subprocess.run(
+            ['git', 'commit', '-m', message], 
+            cwd=project_root, 
+            check=True, 
+            capture_output=True,
+            text=True
+        )
+        
+        # Push
+        subprocess.run(['git', 'push'], cwd=project_root, check=True, capture_output=True)
+        
+        return {
+            'success': True,
+            'message': 'Changes committed and pushed to GitHub'
+        }
+    except subprocess.CalledProcessError as e:
+        # If commit fails because there are no changes, that's okay
+        if 'nothing to commit' in str(e.stderr):
+            return {
+                'success': True,
+                'message': 'No changes to commit'
+            }
+        return {
+            'success': False,
+            'message': f'Git error: {e.stderr}'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Failed to push: {str(e)}'
+        }
 
