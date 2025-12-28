@@ -3,10 +3,19 @@ layout: default
 ---
 
 <div class="container">
+  <!-- Category Filters -->
+  <div class="category-filters">
+    <button class="category-btn active" data-category="all">All</button>
+    {% assign categories = site.projects | map: 'category' | uniq | sort %}
+    {% for category in categories %}
+      <button class="category-btn" data-category="{{ category }}">{{ category | capitalize }}</button>
+    {% endfor %}
+  </div>
+
   <section class="projects-grid">
     {% assign sorted_projects = site.projects | sort: 'date' | reverse %}
     {% for project in sorted_projects %}
-      <article class="project-card">
+      <article class="project-card" data-category="{{ project.category }}">
         <a href="{{ project.url | relative_url }}" class="card-link">
           <div class="card-image">
             <img src="{{ project.hero_image | relative_url }}" alt="{{ project.title }}">
@@ -20,4 +29,26 @@ layout: default
     {% endfor %}
   </section>
 </div>
+
+<script>
+  // Category filtering
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const category = this.dataset.category;
+      
+      // Update active button
+      document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Filter projects
+      document.querySelectorAll('.project-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
 

@@ -41,11 +41,10 @@
         <div class="form-row">
           <div class="form-group">
             <label for="category">Category *</label>
-            <select id="category" name="category" required>
-              <option value="">Select...</option>
-              <option value="python">Python</option>
-              <option value="cad">CAD</option>
-            </select>
+            <input type="text" id="category" name="category" required 
+                   list="categoryList" placeholder="e.g. Python, CAD, Machine Learning">
+            <datalist id="categoryList"></datalist>
+            <small style="color: #666; font-size: 0.85em;">Type to add new or select existing</small>
           </div>
 
           <div class="form-group">
@@ -116,6 +115,19 @@
         const result = await response.json();
         
         if (result.success) {
+          // Populate category suggestions
+          const categories = new Set();
+          result.projects.forEach(project => {
+            if (project.category) categories.add(project.category);
+          });
+          const categoryList = document.getElementById('categoryList');
+          categoryList.innerHTML = '';
+          Array.from(categories).sort().forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            categoryList.appendChild(option);
+          });
+          
           const listDiv = document.getElementById('projectsList');
           if (result.projects.length === 0) {
             listDiv.innerHTML = '<p class="no-projects">No projects yet</p>';

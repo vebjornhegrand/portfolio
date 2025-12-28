@@ -68,6 +68,38 @@ a:hover {
   border-bottom: 1px solid rgba(71, 108, 94, 0.2);
 }
 
+/* Category Filters */
+.category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding: var(--s-6) 0;
+  margin-bottom: var(--s-4);
+}
+
+.category-btn {
+  padding: var(--s-2) var(--s-4);
+  background: transparent;
+  border: 1px solid var(--text);
+  color: var(--text);
+  font-size: var(--font-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.category-btn:hover {
+  background: rgba(71, 108, 94, 0.1);
+}
+
+.category-btn.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
 .site-title {
   font-size: 1rem;
   font-weight: 700;
