@@ -1,8 +1,8 @@
 # Site Configuration
-title: "Engineering Portfolio"
+title: "Project Portfolio - Vebjørn Hegrand"
 description: "Visual-first engineering portfolio"
 url: "https://vebjornhegrand.github.io"
-baseurl: ""
+baseurl: "/portfolio"
 
 # Collections
 collections:
