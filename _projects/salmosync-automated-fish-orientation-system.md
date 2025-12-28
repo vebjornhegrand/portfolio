@@ -4,7 +4,7 @@ title: "SalmoSync – Automated Fish Orientation System"
 description: "A mechatronic system that automatically orients fish in correct head–tail and back–belly directions, eliminating a manual production bottleneck through sensor-based decision making and mechanical actuation."
 hero_image: /assets/images/projects/salmosync-automated-fish-orientation-system/hero.png
 tools: ["Arduino", "Stepper Motors", "Sensors", "Rapid Prototyping", "Automation"]
-category: "python"
+category: "mechatronics"
 date: 2024-05-05
 ---
 
