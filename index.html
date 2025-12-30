@@ -23,6 +23,13 @@ layout: default
           <div class="card-content">
             <h2 class="card-title">{{ project.title }}</h2>
             <p class="card-description">{{ project.description }}</p>
+            {% if project.tools and project.tools.size > 0 %}
+              <div class="card-tools">
+                {% for tool in project.tools %}
+                  <span class="tool-tag">{{ tool }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
           </div>
         </a>
       </article>
